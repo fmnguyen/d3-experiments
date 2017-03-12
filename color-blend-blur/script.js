@@ -22,7 +22,7 @@ var size = 100,
 
 // Use chroma to generate an entire hsl circle array, with length numColors
 var hsl = Array.apply(null, {length: numColors}).map(function(d, i) {
-	return chroma.hsl(360 / numColors * (i + 1), 0.8, 0.85); // rotate around the hsl color space
+	return chroma.hsl(360 / numColors * (i + 1), 0.85, 0.80); // rotate around the hsl color space
 })
 
 var svg = d3.select('.background').append('svg')
@@ -42,16 +42,28 @@ var g = svg.selectAll('g')
 var path = g.append('circle')
 				.attr('class', 'circle')
 				.attr('fill', function(d) { return d; })
-				.attr('r', size / 2)
+				.attr('r', size / 1.75)
 				.attr('cx', function(d, i){
 					var ø = 2 * π / numColors * i;
-					return size / 3 * _sin(ø);
+					return size / 2.5 * _sin(ø);
 				})
 				.attr('cy', function(d, i){
 					var ø = 2 * π / numColors * i;
-					return size / 3 * _cos(ø);
+					return size / 2.5 * _cos(ø);
 				})
 				.style('mix-blend-mode', 'multiply')
+
+var container = svg.append('g')
+					.attr('class', 'circleContainer')
+					.attr('transform', function(d, i) {
+						return 'translate(' + [w/2, h/2] + ')';
+					})
+
+container.append('circle')
+			.attr('r', size - 5)
+			.attr('fill', 'transparent')
+			.attr('stroke', 'rgba(0, 0, 0, 0.35)')
+			.attr('stroke-width', '2')
 
 // Courtesy of Nadieh @ https://www.visualcinnamon.com/2016/05/real-life-motion-effects-d3-visualization.html
 //Always start by appending a defs (definitions) element
@@ -65,7 +77,7 @@ defs.append("filter")
 	.append("feGaussianBlur")	//Append a filter technique
 	.attr("class", "blurValues")	//Needed to select later on for gaussian blur during an animation
 	.attr("in", "SourceGraphic")	//Perform the blur on the applied element
-	.attr("stdDeviation", "4 4");	//Do a blur of 8 standard deviations in the 	horizontal direction and 0 in vertical
+	.attr("stdDeviation", "8 4");	//Do a blur of 8 standard deviations in the 	horizontal direction and 0 in vertical
 
 //Apply the filter to an element
-d3.selectAll("circle").style("filter", "url(#motionFilter)");
+d3.selectAll(".circle").style("filter", "url(#motionFilter)");
