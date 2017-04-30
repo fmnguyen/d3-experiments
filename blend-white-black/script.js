@@ -2,6 +2,7 @@
 // Testing how chroma.js works http://gka.github.io/chroma.js/#quick-start
 // help and concept from Nadieh https://www.visualcinnamon.com/2016/05/beautiful-color-blending-svg-d3.html
 // help for generating colors and circles from Shirley Wu http://bl.ocks.org/sxywu/533cece25dffcf3744da1e2d29653673
+// Gaussian blur effect
 
 var w = h = 600,
 	r = h / 5,
@@ -17,24 +18,11 @@ function _sin(val) {
 }
 
 var size = 100,
-	numColors = 36;
-
-// Create our lense shape (basically an ellipse that meets at a point)
-var x0 = w / 2,
-	y0 = h / 2,
-	x1 = w / 2,
-	y1 = h / 2 - D,
-	cx = r / 2.5,
-	cy = r / 2.0,
-	svgData = 	"M" + [x0, y0] +
-				"C" + [x0 + cx, y0 - cy, x1 + cx, y1 + cy, x1, y1] +
-				"M" + [x0, y0] +
-				"C" + [x0 - cx, y0 - cy, x1 - cx, y1 + cy, x1, y1] +
-				"Z";
+	numColors = 2;
 
 // Use chroma to generate an entire hsl circle array, with length numColors
-var hsl = Array.apply(null, {length: numColors}).map(function(d, i){
-	return chroma.hsl(360 / numColors * (i + 1), 0.875, 0.70); // rotate around the hsl color space
+var hsl = Array.apply(null, {length: numColors}).map(function(d, i) {
+	return chroma.hsl(360 / numColors * (i + 1), 0.85, 0.80); // rotate around the hsl color space
 })
 
 var svg = d3.select('.background').append('svg')
@@ -44,18 +32,24 @@ var svg = d3.select('.background').append('svg')
 
 var g = svg.append('g')
 			.attr('class', 'pathContainer')
+			.attr('transform', function(d, i) {
+				return 'translate(' + [w/2, h/2] + ')';
+			})
 			.style('isolation', 'isolate');
 
-var path = g.selectAll('path')
-			.data(hsl)
-				.enter().append('path')
-			.attr('class', 'path')
-			.attr('fill', function(d) { return d; })
-			.attr('d', svgData)
-			.attr('transform', function(d, i) {
-				var θ = 360 / numColors * i
-				var x = w / 2
-				var y = h / 2
-				return 'rotate(' + [θ, x, y] + ')';
+var path = g.selectAll('circle')
+				.data(d3.range(0,2,1))
+			.enter().append('circle')
+			.attr('class', 'circle')
+			.attr('fill', function(d, i) { return i % 2 == 0 ? 'black' : 'white' ; })
+			.attr('r', size / 1.75)
+			.attr('cx', function(d, i){
+				var ø = 2 * π / numColors * i;
+				return size / 2.5 * _cos(ø);
 			})
-			.style('mix-blend-mode', 'multiply')
+			.attr('cy', function(d, i){
+				var ø = 2 * π / numColors * i;
+				return size / 2.5 * _sin(ø);
+			})
+			//.style('mix-blend-mode', function(d,i) { return i % 2 == 0 ? 'multiply' : 'screen' ;})
+			.style('mix-blend-mode', 'luminosity')

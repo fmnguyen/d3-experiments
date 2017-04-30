@@ -42,20 +42,25 @@ var svg = d3.select('.background').append('svg')
 			.attr('height', h)
 			.style('background-color', 'transparent')
 
-var g = svg.selectAll('g')
-					.data(colors)
-				.enter().append('g')
-					.attr('class', 'pathContainer')
-					.attr('transform', function(d, i) {
-						var θ = 360 / numColors * i
-						var x = w / 2
-						var y = h / 2
-						return 'rotate(' + [θ, x, y] + ')';
-					})
-					.style('isolation', 'auto');
+// All of the paths that you are trying to blend all have to live in the same group container
+var g = svg.append('g')
+			.attr('class', 'pathContainer')
+			.style('isolation', 'isolate')
 
-var path = g.append('path')
+// So we append the data to the path object as opposed to the groups
+// this makes sure we create one group with all the paths
+// as opposed to data.length many groups and paths
+var path = g.selectAll('path')
+				.data(colors)
+					.enter()
+				.append('path')
 				.attr('class', 'path')
 				.attr('fill', function(d) { return d; })
+				.attr('transform', function(d, i) {
+					var θ = 360 / numColors * i
+					var x = w / 2
+					var y = h / 2
+					return 'rotate(' + [θ, x, y] + ')';
+				})
 				.attr('d', svgData)
 				.style('mix-blend-mode', 'multiply')
