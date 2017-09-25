@@ -3,7 +3,6 @@
 // help and concept from Nadieh https://www.visualcinnamon.com/2016/05/beautiful-color-blending-svg-d3.html
 // help for generating colors and circles from Shirley Wu http://bl.ocks.org/sxywu/533cece25dffcf3744da1e2d29653673
 
-
 var w = h = 600; // width and height
 
 // just some nicer math functions
